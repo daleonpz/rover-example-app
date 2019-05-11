@@ -1,0 +1,66 @@
+#Building everything
+FROM tdicola/pi_python_opencv_contrib:3.4.1
+
+COPY qemu-arm-static /usr/bin/qemu-arm-static
+
+# Set up a tools dev directory
+RUN mkdir /home/dev
+WORKDIR /home/dev
+
+
+#Install git
+RUN apt-get update \
+    && apt-get install -y git
+
+# Install wiringPi
+RUN cd ~/  && \
+    git clone git://git.drogon.net/wiringPi && \
+#    git clone https://github.com/WiringPi/WiringPi.git && \
+    cd wiringPi/ &&  \
+#    cd WiringPi && \
+    git pull origin && \
+    ./build
+
+# Install jsoncpp
+RUN apt-get -y install libjsoncpp-dev && \
+    ln -s /usr/include/jsoncpp/json/ /usr/include/json
+
+#Install openssl
+RUN apt-get install libssl-dev
+
+# Install paho.mqtt.c
+RUN cd ~/ && \
+    git clone https://github.com/eclipse/paho.mqtt.c.git && \
+    cd paho.mqtt.c/ && \
+    make && \
+    sudo make install
+
+# Install i2c
+RUN apt-get install -y libi2c-dev i2c-tools lm-sensors
+
+# Install psutil
+RUN pip install psutil
+ 
+# Install raspicam
+RUN cd ~/ && \
+    git clone https://github.com/6by9/raspicam-0.1.3.git && \
+    cd raspicam-0.1.3 && \
+    mkdir -p build && \
+    cd build && \
+    cmake .. &&\
+    make &&\
+    sudo make install
+ 
+# Install bluetooth
+RUN sudo apt-get install -y bluez \
+    libbluetooth-dev 
+
+# Install geany
+RUN sudo apt-get install geany
+
+#Install rover-app
+RUN cd ~ &&\
+    git clone https://github.com/app4mc-rover/rover-app.git &&\
+    cd rover-app && \
+    ./install_roverapp.sh &&\
+    ldconfig
