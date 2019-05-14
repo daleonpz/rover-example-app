@@ -35,11 +35,6 @@ $ sudo apt-get install qemu-user-static
 ### Build the Docker image
 
 ```sh
-$ cd rover-example-app/
-$ ./build.sh arm32v6 
-```
-
-```sh
 $ cd <your rover-example-app dir>
 $ cp /usr/bin/qemu-arm-static ./qemu-arm-static
 $ docker build --platform linux/arm32v6 -f ./docker-rover-app/Dockerfile -t arm32v6/rover-app:0.0.1 . 
