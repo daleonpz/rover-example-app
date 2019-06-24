@@ -1,12 +1,11 @@
-#Building everything
+##############################
+## Installing dependencies 
+##############################
 FROM tdicola/pi_python_opencv_contrib:3.4.1 AS rover-dep
-
-# COPY qemu-arm-static /usr/bin/qemu-arm-static
 
 # Set up a tools dev directory
 RUN mkdir /home/dev
 WORKDIR /home/dev
-
 
 #Install git
 RUN apt-get update \
@@ -56,8 +55,9 @@ RUN sudo apt-get install -y bluez \
 # Install geany
 RUN sudo apt-get install geany
 
-
-#Install rover-app
+##############################
+## Install rover-api
+##############################
 FROM rover-dep AS builder-roverapi
 WORKDIR /roverapi/
 RUN cd ~ &&\
@@ -66,17 +66,21 @@ RUN cd ~ &&\
     ./install_roverapp.sh &&\
     ldconfig   
 
-#Building everything
+##############################
+#Building your APP
+##############################
 FROM builder-roverapi AS builder-myapp
 WORKDIR /home/dev/
 COPY ./driving_control/src/driving_control.cpp /home/dev/driving_control.cpp
 RUN sudo g++ -lroverapi -o driving_control driving_control.cpp
 
-#Building everything
-#FROM balenalib/raspberrypi3-alpine
+##############################
+# Copy your app to lighter base image
+##############################
 FROM balenalib/raspberrypi3
 #FROM raspbian/stretch
 WORKDIR /app/
+
 # Add driving_control
 COPY --from=builder-myapp /home/dev/driving_control /app/driving_control
 
@@ -89,7 +93,6 @@ COPY --from=builder-myapp /usr/local/lib/libpaho-mqtt3as.so.1 /usr/local/lib/
 COPY --from=builder-myapp /usr/local/lib/libpaho-mqtt3c.so.1 /usr/local/lib/
 COPY --from=builder-myapp /usr/local/lib/libpaho-mqtt3cs.so.1 /usr/local/lib/
 COPY --from=builder-myapp /usr/lib/arm-linux-gnueabihf/libjsoncpp.so.1 /usr/local/lib/
-
 
 # roverapi libs
 COPY --from=builder-myapp /usr/local/lib/libconfig_reader.so /usr/local/lib/
@@ -106,4 +109,3 @@ RUN ldconfig
 
 # Start driving_control
 ENTRYPOINT ["./driving_control"]
-#CMD /bin/sh ./driving_control 
