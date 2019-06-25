@@ -45,7 +45,7 @@ $ docker build --platform linux/arm32v6 -f ./docker-rover-app/Dockerfile -t arm3
 First time:
 ```sh
 $ cd <your rover-example-app dir>/driving_control
-$ docker run -v $(pwd):/root/workspace/driving_control -w /root/workspace/driving_control -it arm32v6/rover-app:0.0.1 /bin/bash
+$ docker run --privileged -v $(pwd):/root/workspace/driving_control -w /root/workspace/driving_control -it arm32v6/rover-app:0.0.1 /bin/bash
 ```
 Thereafter:
 ```sh
