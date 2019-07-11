@@ -56,23 +56,26 @@ RUN sudo apt-get install -y bluez \
 RUN sudo apt-get install geany
 
 ##############################
-## Install rover-api
+# Build rover-api
 ##############################
 FROM rover-dep AS builder-roverapi
-WORKDIR /roverapi/
+WORKDIR /roverapp/
 RUN cd ~ &&\
     git clone https://github.com/app4mc-rover/rover-app.git &&\
     cd rover-app && \
     ./install_roverapp.sh &&\
-    ldconfig   
+    ldconfig 
 
-##############################
-#Building your APP
-##############################
-FROM builder-roverapi AS builder-myapp
+#############################
+# Build roverapp
+#############################
+FROM builder-roverapi AS builder-roverapp
 WORKDIR /home/dev/
-COPY ./driving_control/src/driving_control.cpp /home/dev/driving_control.cpp
-RUN sudo g++ -lroverapi -o driving_control driving_control.cpp
+RUN git clone https://github.com/app4mc-rover/rover-app.git &&\
+    cd rover-app &&\
+    ./make_roverapp.sh 
+
+RUN ls 
 
 ##############################
 # Copy your app to lighter base image
@@ -82,30 +85,30 @@ FROM balenalib/raspberrypi3
 WORKDIR /app/
 
 # Add driving_control
-COPY --from=builder-myapp /home/dev/driving_control /app/driving_control
+COPY --from=builder-roverapp /home/dev/rover-app/build/bin/roverapp /app/roverapp
 
 # general libs
-COPY --from=builder-myapp /usr/local/lib/libwiringPi.so /usr/local/lib/libwiringPi.so
-COPY --from=builder-myapp /usr/local/lib/libwiringPiDev.so /usr/local/lib/libwiringPiDev.so
-COPY --from=builder-myapp /usr/local/lib/libhono_interaction.so /usr/local/lib/libhono_interaction.so
-COPY --from=builder-myapp /usr/local/lib/libpaho-mqtt3a.so.1 /usr/local/lib/
-COPY --from=builder-myapp /usr/local/lib/libpaho-mqtt3as.so.1 /usr/local/lib/
-COPY --from=builder-myapp /usr/local/lib/libpaho-mqtt3c.so.1 /usr/local/lib/
-COPY --from=builder-myapp /usr/local/lib/libpaho-mqtt3cs.so.1 /usr/local/lib/
-COPY --from=builder-myapp /usr/lib/arm-linux-gnueabihf/libjsoncpp.so.1 /usr/local/lib/
+COPY --from=builder-roverapp /usr/local/lib/libwiringPi.so /usr/local/lib/libwiringPi.so
+COPY --from=builder-roverapp /usr/local/lib/libwiringPiDev.so /usr/local/lib/libwiringPiDev.so
+COPY --from=builder-roverapp /usr/local/lib/libhono_interaction.so /usr/local/lib/libhono_interaction.so
+COPY --from=builder-roverapp /usr/local/lib/libpaho-mqtt3a.so.1 /usr/local/lib/
+COPY --from=builder-roverapp /usr/local/lib/libpaho-mqtt3as.so.1 /usr/local/lib/
+COPY --from=builder-roverapp /usr/local/lib/libpaho-mqtt3c.so.1 /usr/local/lib/
+COPY --from=builder-roverapp /usr/local/lib/libpaho-mqtt3cs.so.1 /usr/local/lib/
+COPY --from=builder-roverapp /usr/lib/arm-linux-gnueabihf/libjsoncpp.so.1 /usr/local/lib/
 
 # roverapi libs
-COPY --from=builder-myapp /usr/local/lib/libconfig_reader.so /usr/local/lib/
-COPY --from=builder-myapp /usr/local/lib/libpthread_distribution.so /usr/local/lib/
-COPY --from=builder-myapp /usr/local/lib/libroverapi.so  /usr/local/lib/
-COPY --from=builder-myapp /usr/local/lib/libroverapptasks.so /usr/local/lib/
-COPY --from=builder-myapp /usr/local/lib/libtiming.so /usr/local/lib/
-COPY --from=builder-myapp /usr/local/lib/libhono_interaction.so /usr/local/lib/
-COPY --from=builder-myapp /usr/local/lib/libpthread_monitoring.so /usr/local/lib/
-COPY --from=builder-myapp /usr/local/lib/libroverappdrivers.so /usr/local/lib/
-COPY --from=builder-myapp /usr/local/lib/libstatus_library.so /usr/local/lib/
+COPY --from=builder-roverapp /usr/local/lib/libconfig_reader.so /usr/local/lib/
+COPY --from=builder-roverapp /usr/local/lib/libpthread_distribution.so /usr/local/lib/
+COPY --from=builder-roverapp /usr/local/lib/libroverapi.so  /usr/local/lib/
+COPY --from=builder-roverapp /usr/local/lib/libroverapptasks.so /usr/local/lib/
+COPY --from=builder-roverapp /usr/local/lib/libtiming.so /usr/local/lib/
+COPY --from=builder-roverapp /usr/local/lib/libhono_interaction.so /usr/local/lib/
+COPY --from=builder-roverapp /usr/local/lib/libpthread_monitoring.so /usr/local/lib/
+COPY --from=builder-roverapp /usr/local/lib/libroverappdrivers.so /usr/local/lib/
+COPY --from=builder-roverapp /usr/local/lib/libstatus_library.so /usr/local/lib/
 
 RUN ldconfig
 
 # Start driving_control
-ENTRYPOINT ["./driving_control"]
+ENTRYPOINT ["./roverapp"]
