@@ -26,11 +26,11 @@ using namespace rover;
 
 typedef enum
 {
-    forward_state,
-    backward_state,
-    turnright_state, 
-    turnleft_state,
-    idle_state,
+    forward,
+    backward,
+    turnright, 
+    turnleft,
+    idle,
 
 }roverStates;
 
@@ -44,31 +44,35 @@ int main (){
     r_driving.initialize();
     r_driving.setSpeed(HIGHEST_SPEED);
 
-    roverStates steps[] = {forward_state, backward_state, turnleft_state, idle_state};
+    // Modify here to add more steps 
+    roverStates steps[] = {forward, 
+                backward, 
+                turnleft, 
+                idle};
 
     int moves = (int)( sizeof(steps) / sizeof(steps[0]));
 
     for( int i=0; i<moves; i++){
         switch( steps[i] ){
-            case forward_state:
+            case forward:
                 r_driving.goForward();
                 break;
-            case backward_state:
+            case backward:
                 r_driving.goBackward();
                 break; 
-            case turnright_state:
+            case turnright:
                 r_driving.turnRight();
                 break;
-            case turnleft_state:
+            case turnleft:
                 r_driving.turnLeft();
                 break;
-            case idle_state: 
+            case idle: 
             default:
                 r_driving.stopRover();
                 break; 
         }
         r_base.sleep (1500);
-        printf("states: %i", steps[i]);
+        printf("states: %i \n", steps[i]);
     }
     
     printf("Exiting.\n");
