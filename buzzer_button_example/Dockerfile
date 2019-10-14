@@ -12,11 +12,7 @@ RUN apt-get update \
     && apt-get install -y git
 
 # Install wiringPi
-RUN cd ~/  && \
-    git clone git://git.drogon.net/wiringPi && \
-    cd wiringPi/ &&  \
-    git pull origin && \
-    ./build
+RUN sudo apt-get install wiringpi
 
 # Install jsoncpp
 RUN apt-get -y install libjsoncpp-dev && \
@@ -85,8 +81,8 @@ WORKDIR /app/
 COPY --from=builder-myapp /home/dev/buzzer_button_example /app/buzzer_button_example
 
 # general libs
-COPY --from=builder-myapp /usr/local/lib/libwiringPi.so /usr/local/lib/libwiringPi.so
-COPY --from=builder-myapp /usr/local/lib/libwiringPiDev.so /usr/local/lib/libwiringPiDev.so
+COPY --from=builder-myapp /usr/lib/libwiringPi.so /usr/lib/libwiringPi.so
+COPY --from=builder-myapp /usr/lib/libwiringPiDev.so /usr/lib/libwiringPiDev.so
 COPY --from=builder-myapp /usr/local/lib/libhono_interaction.so /usr/local/lib/libhono_interaction.so
 COPY --from=builder-myapp /usr/local/lib/libpaho-mqtt3a.so.1 /usr/local/lib/
 COPY --from=builder-myapp /usr/local/lib/libpaho-mqtt3as.so.1 /usr/local/lib/
