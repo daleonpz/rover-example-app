@@ -9,18 +9,20 @@ WORKDIR /home/dev
 
 
 #Install git
-RUN apt-get update \
-    && apt-get install -y git
+RUN sudo apt-get update \
+    && sudo apt-get install -y git
 
 # Install wiringPi
-RUN sudo apt-get install wiringpi
+RUN sudo apt-get update \
+    && sudo apt-get install wiringpi
 
 # Install jsoncpp
-RUN apt-get -y install libjsoncpp-dev && \
+RUN sudo apt-get update \
+    && sudo apt-get -y install libjsoncpp-dev && \
     ln -s /usr/include/jsoncpp/json/ /usr/include/json
 
 #Install openssl
-RUN apt-get install libssl-dev
+RUN sudo apt-get install libssl-dev
 
 # Install paho.mqtt.c
 RUN cd ~/ && \
@@ -30,7 +32,7 @@ RUN cd ~/ && \
     sudo make install
 
 # Install i2c
-RUN apt-get install -y libi2c-dev i2c-tools lm-sensors
+RUN sudo apt-get install -y libi2c-dev i2c-tools lm-sensors
 
 # Install psutil
 RUN pip install psutil
@@ -60,7 +62,7 @@ RUN cd ~ &&\
     git clone https://github.com/app4mc-rover/rover-app.git &&\
     cd rover-app && \
     ./install_roverapp.sh &&\
-    ldconfig   
+    sudo ldconfig   
 
 #Building everything
 FROM builder-roverapi AS builder-myapp
@@ -98,9 +100,8 @@ COPY --from=builder-myapp /usr/local/lib/libpthread_monitoring.so /usr/local/lib
 COPY --from=builder-myapp /usr/local/lib/libroverappdrivers.so /usr/local/lib/
 COPY --from=builder-myapp /usr/local/lib/libstatus_library.so /usr/local/lib/
 
-RUN ldconfig
+RUN sudo ldconfig
 
-RUN chmod +x ./driving_control
 # Start driving_control
 ENTRYPOINT ["./driving_control"]
 #CMD /bin/sh ./driving_control 
