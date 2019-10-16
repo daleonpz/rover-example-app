@@ -53,7 +53,10 @@ Thereafter:
 ```sh
 $ docker start -i <your container id>
 ```
-
+If it does not work:
+```
+$ docker run --privileged -it arm32v6/rover-app:0.0.1 /bin/bash
+```
 ### Build driving_control
 
 In the container:
