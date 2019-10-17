@@ -39,14 +39,14 @@ $ sudo apt-get install qemu-user-static
 ```sh
 $ cd <your rover-example-app dir>
 $ cp /usr/bin/qemu-arm-static ./qemu-arm-static
-$ docker build --platform linux/arm32v6 -f ./docker-rover-app/Dockerfile -t arm32v6/rover-app:0.0.1 . 
+$ docker build --platform linux/arm32v6 -f ./driving_control_iotplayground/Dockerfile -t arm32v6/rover-app:0.0.1 . 
 ```
 
 ### Start the container
 
 First time:
 ```sh
-$ cd <your rover-example-app dir>/driving_control
+$ cd <your rover-example-app dir>/driving_control_iotplayground
 $ docker run -v $(pwd):/root/workspace/driving_control -w /root/workspace/driving_control -it arm32v6/rover-app:0.0.1 /bin/bash
 ```
 Thereafter:
