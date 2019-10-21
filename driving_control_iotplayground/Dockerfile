@@ -69,7 +69,7 @@ RUN cd ~ &&\
 #Building everything
 FROM builder-roverapi AS builder-myapp
 WORKDIR /home/dev/
-COPY ./driving_control/src/driving_control.cpp /home/dev/driving_control.cpp
+COPY ./driving_control_iotplayground/src/driving_control.cpp /home/dev/driving_control.cpp
 RUN sudo g++ -lroverapi -o driving_control driving_control.cpp
 
 #Building everything
@@ -106,4 +106,3 @@ RUN ldconfig
 
 # Start driving_control
 ENTRYPOINT ["./driving_control"]
-#CMD /bin/sh ./driving_control 
