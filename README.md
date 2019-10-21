@@ -51,7 +51,7 @@ $ docker run -v $(pwd):/root/workspace/driving_control -w /root/workspace/drivin
 ```
 Thereafter:
 ```sh
-$ docker start -i <your container id>
+$ docker start -i <your image id>
 ```
 If it does not work:
 ```
