@@ -46,9 +46,10 @@ $ docker build --platform linux/arm32v6 -f ./driving_control_iotplayground/Docke
 
 First time:
 ```sh
-$ cd <your rover-example-app dir>/driving_control_iotplayground
-$ docker run -v $(pwd):/root/workspace/driving_control -w /root/workspace/driving_control -it arm32v6/rover-app:0.0.1 /bin/bash
+$ cd <your rover-example-app dir>/driving_control
+$ docker run --privileged -v $(pwd):/root/workspace/driving_control -w /root/workspace/driving_control -it arm32v6/rover-app:0.0.1 /bin/bash
 ```
+
 Thereafter:
 ```sh
 $ docker start -i <your image id>
